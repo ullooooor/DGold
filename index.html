@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DGolD - 24K Gold Tracker</title>
+    <!-- Gold Coin Web Icon Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%23ffd700' stroke='%23cca300' stroke-width='6'/><circle cx='50' cy='50' r='36' fill='none' stroke='%23ffe680' stroke-width='2' stroke-dasharray='6 4'/><text x='50' y='58' font-size='38' font-weight='bold' text-anchor='middle' fill='%23997a00' font-family='sans-serif'>G</text></svg>">
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts & FontAwesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="mobile-container">
+        <!-- iOS App Header -->
+        <header class="app-header">
+            <div class="brand">
+                <i class="fa-solid fa-coins"></i>
+                <span>DGolD</span>
+            </div>
+            <div class="header-actions">
+                <i class="fa-regular fa-bell"></i>
+                <i class="fa-solid fa-circle-user"></i>
+            </div>
+        </header>
+
+        <!-- Main Scrollable Content -->
+        <main class="app-content">
+            <!-- Portfolio Value Card -->
+            <section class="glass-card portfolio-card">
+                <span class="card-label">Your Gold Locker Value</span>
+                <h1 id="portfolio-val">₹1,491.70</h1>
+                <div class="badge-row">
+                    <span class="badge positive" id="portfolio-growth"><i class="fa-solid fa-arrow-trend-up"></i> +2.45%</span>
+                    <span class="sub-text" id="live-status">Market quote not verified</span>
+                </div>
+                <div class="action-buttons">
+                    <button class="glass-btn primary" onclick="scrollToCalc()"><i class="fa-solid fa-plus"></i> Invest</button>
+                    <button class="glass-btn" onclick="scrollToAccounts()"><i class="fa-solid fa-wallet"></i> Accounts</button>
+                    <button class="glass-btn danger-btn" onclick="resetWallet()"><i class="fa-solid fa-rotate-right"></i> Reset</button>
+                </div>
+            </section>
+
+            <!-- Actual Live Market Rates Card (24K Pure Corrected) -->
+            <section class="glass-card rates-card">
+                <div class="section-title">
+                    <span id="rate-section-title">Digital Gold Market Estimate</span>
+                    <button class="rate-refresh-btn" id="refresh-rate-btn" type="button" onclick="refreshGoldRate()">
+                        <i class="fa-solid fa-rotate"></i> Refresh rate
+                    </button>
+                </div>
+                <div class="rate-grid">
+                    <div class="rate-item">
+                        <span class="rate-label" id="actual-24k-buy-label">24K Spot Buy (₹/g)</span>
+                        <span class="rate-val" id="actual-24k-buy">₹ 14,917.00/g</span>
+                    </div>
+                    <div class="rate-item">
+                        <span class="rate-label" id="actual-24k-sell-label">Estimated Sell (₹/g)</span>
+                        <span class="rate-val" id="actual-24k-sell">₹ 14,469.49/g</span>
+                    </div>
+                    <div class="rate-item">
+                        <span class="rate-label" id="spread-label">Spread Rate</span>
+                        <span class="rate-val" id="spread-rate">₹ 447.51/g · 3.00%</span>
+                    </div>
+                </div>
+                <p class="rate-update-status" id="rate-update-status" aria-live="polite">Showing the last saved rate. Import a Paytm screenshot to use its quote.</p>
+                <div class="investment-tracker">
+                    <div class="investment-tracker-heading">
+                        <div>
+                            <span class="card-label">Investment Account</span>
+                            <p class="investment-tracker-caption" id="investment-valuation-source">Value uses the selected market quote</p>
+                        </div>
+                        <span class="investment-market-value" id="investment-market-value">₹0.00</span>
+                    </div>
+                    <div class="investment-stat-grid">
+                        <div class="investment-stat">
+                            <span class="rate-label">Gold held</span>
+                            <strong id="investment-gold-grams">0.00000 g</strong>
+                        </div>
+                        <div class="investment-stat">
+                            <span class="rate-label">Total invested</span>
+                            <strong id="investment-cost-basis">₹0.00</strong>
+                        </div>
+                        <div class="investment-stat">
+                            <span class="rate-label">Estimated P&amp;L</span>
+                            <strong id="investment-profit-loss">₹0.00</strong>
+                        </div>
+                    </div>
+                    <div class="investment-chart-wrapper">
+                        <canvas id="investmentHistoryCanvas" role="img" aria-label="Investment account value history"></canvas>
+                    </div>
+                    <p class="investment-chart-note" id="investment-history-note">History is recorded when the market rate refreshes or you invest.</p>
+                </div>
+                <section class="sell-decision-panel" aria-labelledby="sell-decision-title">
+                    <div class="sell-decision-heading">
+                        <div>
+                            <span class="card-label">Gold position review</span>
+                            <h2 id="sell-decision-title">Should I sell?</h2>
+                        </div>
+                        <i class="fa-solid fa-scale-balanced" aria-hidden="true"></i>
+                    </div>
+                    <p class="sell-decision-disclaimer">Dgolai offers an informational view, not a guaranteed forecast or a trade. Review Paytm's current sell quote before deciding.</p>
+                    <div class="sell-facts-grid">
+                        <div><span>Estimated proceeds</span><strong id="sell-estimated-proceeds">₹0.00</strong></div>
+                        <div><span>Gain / loss if sold</span><strong id="sell-estimated-pnl">Not available</strong></div>
+                    </div>
+                    <button class="sell-ai-button" id="sell-ai-button" type="button" onclick="analyzeSellDecision()">
+                        <span class="sell-ai-button-face"><i class="fa-solid fa-arrow-right-arrow-left"></i> Should I sell?</span>
+                    </button>
+                    <div class="sell-ai-result" id="sell-ai-result" aria-live="polite">Ask Dgolai to review your current gold position.</div>
+                </section>
+            </section>
+
+            <!-- FamPay Savings & Spending Accounts Management -->
+            <section class="glass-card" id="accounts-section">
+                <div class="section-title">
+                    <span>FamPay Wallets & Spending</span>
+                    <i class="fa-solid fa-building-columns"></i>
+                </div>
+                
+                <div class="account-split-grid">
+                    <!-- Savings Account Box -->
+                    <div class="sub-account-box">
+                        <span class="account-title"><i class="fa-solid fa-piggy-bank"></i> Savings Balance</span>
+                        <h3 id="savings-bal-disp">₹5,200.00</h3>
+                        <div class="account-input-row">
+                            <input type="number" id="savings-input" placeholder="+/- Amt">
+                            <button class="glass-btn primary" onclick="updateAccount('savings')">Update</button>
+                        </div>
+                    </div>
+
+                    <!-- Spending Account Box -->
+                    <div class="sub-account-box">
+                        <span class="account-title"><i class="fa-solid fa-credit-card"></i> Spending Account</span>
+                        <h3 id="spending-bal-disp">₹1,850.00</h3>
+                        <div class="account-input-row">
+                            <input type="number" id="spending-input" placeholder="+/- Amt">
+                            <button class="glass-btn primary" onclick="updateAccount('spending')">Update</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="savings-history-panel">
+                    <div class="savings-panel-heading">
+                        <div>
+                            <span class="card-label">Savings balance history</span>
+                            <p class="savings-panel-caption">Recorded locally when your balance changes</p>
+                        </div>
+                        <div class="savings-history-actions">
+                            <strong id="savings-history-current">₹5,200.00</strong>
+                            <button class="savings-reset-btn" type="button" onclick="resetSavingsTracker()" aria-label="Reset savings balance and history" title="Reset savings balance and history">
+                                <i class="fa-solid fa-rotate-left"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="savings-history-chart-wrap">
+                        <canvas id="savingsHistoryCanvas" role="img" aria-label="FamPay savings balance history"></canvas>
+                    </div>
+                    <p class="savings-history-note" id="savings-history-note">Balance changes are saved on this device.</p>
+                </div>
+
+                <div class="savings-plan-panel">
+                    <div class="section-title">
+                        <span>Save part of your income</span>
+                        <i class="fa-solid fa-piggy-bank"></i>
+                    </div>
+                    <p class="savings-panel-caption">Enter the income you received and the rupee amount you want to save.</p>
+                    <div class="savings-plan-fields">
+                        <div class="input-group">
+                            <label for="savings-income-amount">Income received (₹)</label>
+                            <input type="number" id="savings-income-amount" min="0" step="0.01" placeholder="e.g. 2,000">
+                        </div>
+                        <div class="savings-plan-row">
+                            <div class="input-group">
+                                <label for="savings-save-amount">Amount to save (₹)</label>
+                                <input type="number" id="savings-save-amount" min="0.01" step="0.01" placeholder="Enter any amount">
+                            </div>
+                            <div class="input-group">
+                                <label for="savings-contribution-frequency">Income frequency</label>
+                                <select id="savings-contribution-frequency">
+                                    <option value="daily">Daily</option>
+                                    <option value="weekly">Weekly</option>
+                                    <option value="monthly" selected>Monthly</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="savings-ai-row">
+                        <button class="glass-btn" id="suggest-savings-amount-btn" type="button" onclick="suggestSavingsAmount()">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> Ask Dgolai for an amount
+                        </button>
+                        <span class="savings-ai-status" id="savings-ai-status" aria-live="polite"></span>
+                    </div>
+                    <div class="savings-projection-grid" id="savings-projection" aria-live="polite">
+                        <div class="savings-projection-item"><span>Per income</span><strong id="save-per-income-value">₹0.00</strong></div>
+                        <div class="savings-projection-item"><span>Per day</span><strong id="save-per-day-value">₹0.00</strong></div>
+                        <div class="savings-projection-item"><span>Per week</span><strong id="save-per-week-value">₹0.00</strong></div>
+                        <div class="savings-projection-item"><span>Per month</span><strong id="save-per-month-value">₹0.00</strong></div>
+                    </div>
+                    <p class="savings-panel-caption">Projection repeats the same INR amount at the selected income frequency. Interest is not included.</p>
+                    <button class="glass-btn primary add-saved-income-btn" id="add-saved-income-btn" type="button" onclick="addIncomeSavings()">
+                        <i class="fa-solid fa-plus"></i> Add saved portion to savings
+                    </button>
+                    <p class="savings-add-status" id="savings-add-status" aria-live="polite"></p>
+                </div>
+
+                <div class="spending-details-box">
+                    <span class="card-label">Recent Spending Details / Notes</span>
+                    <input type="text" id="spending-details-note" placeholder="e.g. Food delivery, transport, UPI rides..." value="Snacks and cafe outings">
+                    <button class="glass-btn sync-btn" onclick="saveSpendingDetails()"><i class="fa-solid fa-floppy-disk"></i> Save Spending Notes</button>
+                </div>
+            </section>
+
+            <!-- Gemini AI Smart Micro-Investment Advisor -->
+            <section class="glass-card ai-advisor-card">
+                <div class="section-title">
+                    <span>Dgolai Smart Gold Advisor</span>
+                    <span class="ai-badge"><i class="fa-solid fa-wand-magic-sparkles"></i> Dgolai Active</span>
+                </div>
+                <p class="ai-desc">Get intelligent micro-investment recommendations tailored to your FamPay savings and spending capacity.</p>
+                
+                <button class="glass-btn primary ai-trigger-btn" id="ask-ai-btn" onclick="fetchGeminiAdvice()">
+                    <i class="fa-solid fa-robot"></i> Ask Dgolai for Smart Allocation
+                </button>
+                <button class="glass-btn dgolai-chat-launcher" id="open-dgolai-chat-btn" type="button" onclick="openDgolaiChat()">
+                    <i class="fa-regular fa-comments"></i> Chat with Dgolai
+                </button>
+
+                <div class="gold-import-panel">
+                    <h3>Import Paytm Gold Screenshot</h3>
+                    <p class="gold-import-disclaimer">Dgolai sends the screenshot to Google's Gemini model for reading. Review the extracted values before allowing it to replace your gold holding.</p>
+                    <input type="file" id="gold-screenshot-input" accept="image/png,image/jpeg,image/webp" onchange="handleGoldScreenshotSelection(event)">
+                    <img id="gold-screenshot-preview" class="gold-screenshot-preview" alt="Selected Paytm gold screenshot" hidden>
+                    <button class="glass-btn screenshot-analyze-btn" id="analyze-gold-screenshot-btn" type="button" onclick="analyzePaytmGoldScreenshot()" disabled>
+                        <i class="fa-solid fa-eye"></i> Read screenshot with Dgolai
+                    </button>
+                    <div class="gold-import-review" id="gold-import-review" aria-live="polite" hidden></div>
+                    <div class="gold-import-actions" id="gold-import-actions" hidden>
+                        <button class="glass-btn primary" id="apply-gold-import-btn" type="button" onclick="applyPaytmGoldImport()">Apply to investment account</button>
+                        <button class="glass-btn" type="button" onclick="discardPaytmGoldImport()">Discard</button>
+                    </div>
+                    <p class="gold-import-status" id="gold-import-status" aria-live="polite"></p>
+                </div>
+
+                <div class="ai-response-box" id="ai-response-output">
+                    Tap the button above to generate AI micro-allocation guidance based on your live balances.
+                </div>
+            </section>
+
+            <!-- Trading View Line Chart Card -->
+            <section class="glass-card chart-card">
+                <div class="chart-header">
+                    <div>
+                        <span class="chart-subtitle" id="chart-rate-subtitle">Observed gold sell quote (INR/g)</span>
+                        <h2 class="chart-main-val" id="chart-live-price">₹ 14,917</h2>
+                    </div>
+                    <span class="badge positive" id="chart-change-pct">+2.45%</span>
+                </div>
+
+                <div class="chart-wrapper">
+                    <canvas id="tradingLineCanvas"></canvas>
+                </div>
+
+                <!-- Timeframe Selectors -->
+                <div class="timeframe-selector">
+                    <button class="tf-btn active" onclick="setTimeframe('Days', this)">Days</button>
+                    <button class="tf-btn" onclick="setTimeframe('Weeks', this)">Weeks</button>
+                    <button class="tf-btn" onclick="setTimeframe('Months', this)">Months</button>
+                    <button class="tf-btn" onclick="setTimeframe('Years', this)">Years</button>
+                    <button class="tf-btn" onclick="setTimeframe('All', this)">All</button>
+                </div>
+            </section>
+
+            <!-- Manual Investment & 3% GST Calculator -->
+            <section class="glass-card" id="calculator-section">
+                <div class="section-title">
+                    <span>Manual Investment & GST</span>
+                    <i class="fa-solid fa-calculator"></i>
+                </div>
+                <div class="input-group">
+                    <label for="manual-amt">Enter Gross Amount (₹)</label>
+                    <input type="number" id="manual-amt" value="500">
+                </div>
+                <div class="calc-breakdown" id="gst-breakdown">
+                    <!-- Populated via script.js -->
+                </div>
+                <button class="glass-btn primary invest-submit-btn" id="invest-submit-btn" type="button" onclick="investManualAmount()">
+                    <i class="fa-solid fa-coins"></i> Invest
+                </button>
+            </section>
+
+            <!-- Potential Return Simulator -->
+            <section class="glass-card">
+                <div class="section-title">
+                    <span>Potential Return Simulator</span>
+                    <i class="fa-solid fa-chart-line"></i>
+                </div>
+                <div class="input-group">
+                    <label for="sim-cap">Investment Capital (₹)</label>
+                    <input type="number" id="sim-cap" value="1000">
+                </div>
+                <div class="input-group">
+                    <label for="sim-days">Holding Duration (Days)</label>
+                    <input type="number" id="sim-days" value="30">
+                </div>
+                <div class="calc-breakdown" id="sim-breakdown">
+                    <!-- Populated via script.js -->
+                </div>
+            </section>
+        </main>
+
+        <!-- iOS Bottom Navigation Bar -->
+        <nav class="bottom-nav">
+            <a href="#" class="nav-item active"><i class="fa-solid fa-house"></i><span>Home</span></a>
+            <a href="#" class="nav-item"><i class="fa-solid fa-qrcode"></i><span>Scan</span></a>
+            <a href="#" class="nav-item" onclick="scrollToAccounts()"><i class="fa-solid fa-wallet"></i><span>Accounts</span></a>
+            <a href="#" class="nav-item" onclick="scrollToCalc()"><i class="fa-solid fa-chart-column"></i><span>Analytics</span></a>
+            <a href="#" class="nav-item"><i class="fa-solid fa-user"></i><span>Account</span></a>
+        </nav>
+    </div>
+
+    <div class="dgolai-chat-backdrop" id="dgolai-chat-backdrop" hidden>
+        <section class="dgolai-chat-dialog" role="dialog" aria-modal="true" aria-labelledby="dgolai-chat-title">
+            <header class="dgolai-chat-header">
+                <div>
+                    <span class="ai-badge">Dgolai</span>
+                    <h2 id="dgolai-chat-title">Chat with Dgolai</h2>
+                </div>
+                <button class="dgolai-chat-close" type="button" onclick="closeDgolaiChat()" aria-label="Close Dgolai chat" title="Close chat">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </header>
+            <div class="dgolai-chat-messages" id="dgolai-chat-messages" aria-live="polite" aria-label="Chat messages"></div>
+            <form class="dgolai-chat-form" id="dgolai-chat-form" onsubmit="sendDgolaiChatMessage(event)">
+                <label class="sr-only" for="dgolai-chat-input">Message Dgolai</label>
+                <textarea id="dgolai-chat-input" rows="2" maxlength="1200" placeholder="Ask about your gold or savings..." required></textarea>
+                <button class="glass-btn primary" id="dgolai-chat-send-btn" type="submit" aria-label="Send message" title="Send message">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </form>
+            <p class="dgolai-chat-note">Replies are AI-generated financial information, not personalized professional advice.</p>
+        </section>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
