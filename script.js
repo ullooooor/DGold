@@ -554,7 +554,7 @@ function resetWallet() {
 }
 
 // Gemini API Key Provided
-const GEMINI_API_KEY = "AQ.Ab8RN6Ish7krh-FRK4cMnoSvB4UvsLC9hdx43V4CnAHHW5asOA";
+const GEMINI_API_KEY = "AQ.Ab8RN6ImGyHtjmgX5CVQUHjbBjPGhJ7TrxF8t1CTbmoqAlbnBw";
 
 let dgolaiChatHistory = [];
 let dgolaiChatBusy = false;
