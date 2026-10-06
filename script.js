@@ -617,7 +617,7 @@ async function sendDgolaiChatMessage(event) {
         }));
 
     try {
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${GEMINI_API_KEY}`, {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -725,7 +725,7 @@ async function analyzePaytmGoldScreenshot() {
     try {
         const imageData = await readScreenshotAsBase64(file);
         const prompt = `Read this Paytm Digital Gold screenshot. Extract fields by their labels, not by position: "Your gold in locker" is gold quantity in grams; "Buy" is the Paytm buy quote in INR per gram; "Value" is the current gold account value in INR; "Invested" is total invested principal in INR. The screenshot may show a BUY quote but no SELL quote. Do not require a sell quote. Never confuse Value with Invested. Do not guess missing values. Return valid JSON only with exactly these keys: {"gold_grams": number_or_null, "paytm_buy_price_inr_per_gram": number_or_null, "paytm_sell_price_inr_per_gram": number_or_null, "current_gold_value_inr": number_or_null, "total_invested_inr": number_or_null}. For a visible but unavailable sell quote return null. Use numeric values without currency symbols or units.`;
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${GEMINI_API_KEY}`, {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -910,7 +910,7 @@ async function fetchGeminiAdvice() {
     Give a smart, concise micro-investment recommendation (small amounts in INR) on how much the user should allocate from their Savings vs Spending account today to buy 24K gold safely without impacting daily cash flow. Keep it practical, encouraging, and clear (under 3 sentences).`;
 
     try {
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${GEMINI_API_KEY}`, {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
